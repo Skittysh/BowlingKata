@@ -1,10 +1,22 @@
+using System.Diagnostics;
+
 namespace BowlingKata;
 
 public class Game
 {
-    private int gameScore = 0;
     private int turn = 0;
-    private List<int> pinList = new List<int>();
+    private List<int> pinList = new();
+    public Game()
+    {
+        fullList();
+    }
+    private void fullList()
+    {
+        for (int i = 0; i <=21; i++)
+        {
+            pinList.Add(0);
+        }
+    }
 
     private bool isSpare(int pin1, int pin2)
     {
@@ -18,7 +30,7 @@ public class Game
 
     private bool isStrike(int pin1)
     {
-        if (pin1 == 10)
+        if (pin1 == 10) 
         {
             return true;
         }
@@ -28,71 +40,37 @@ public class Game
 
     public int score()
     {
-        int tempTurn = 0;
-        int halfTurn = 0;
-        int round = 0;
-        int strikeAmount = 0;
-
-        foreach (var pin in pinList)
+        int indexPin = 0;
+        int gameScore = 0;
+        for (int index = 0; index < 10; index++)
         {
-            if (tempTurn != 10 && tempTurn != 11)
+           
+            if (isStrike(pinList[indexPin]))
             {
-                gameScore += pin;
+                gameScore += pinList[indexPin];
+                gameScore += pinList[indexPin+1] + pinList[indexPin+2];
+                indexPin++;
             }
-
-            if (tempTurn != 10 && tempTurn != 11 && tempTurn != 12)
+            else if (isSpare(pinList[indexPin], pinList[indexPin + 1]))
             {
-                if (isStrike(pin) && halfTurn != 1)
-                {
-                    halfTurn++;
-                    strikeAmount += 2;
-                }
-
-                
-                if (round != 1 && round != 0 && strikeAmount == 0 && !isStrike(pinList[round-2])&&  isSpare(pinList[round - 1], pinList[round - 2]))
-                {
-                    gameScore += pin;
-                }
-
-                if (round != 0 && strikeAmount > 0 && isStrike(pinList[round - 1]))
-                {
-                    gameScore += pin;
-                    strikeAmount--;
-                }
-
-                if (round != 1 && round != 0 && strikeAmount > 0 && isStrike(pinList[round - 2]))
-                {
-                    gameScore += pin;
-                    strikeAmount--;
-                }
-
-                
+                gameScore += pinList[indexPin] + pinList[indexPin + 1];
+                gameScore += pinList[indexPin+2];
+                indexPin+=2;
             }
-
-            if (tempTurn == 10 || tempTurn == 11 || tempTurn == 12)
+            else
             {
-                gameScore += pin;
-                
-            }
-
-            halfTurn++;
-            round++;
-            if (halfTurn == 2)
-            {
-                halfTurn = 0;
-                tempTurn++;
+                gameScore += pinList[indexPin];
+                gameScore += pinList[indexPin+1];
+                indexPin += 2;
             }
         }
-
-
-        pinList.Clear();
         return gameScore;
     }
 
-
     public void roll(int pins)
     {
-        pinList.Add(pins);
+        pinList[turn] = pins;
+        turn++;
     }
 
 
